@@ -46,21 +46,6 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 print("Successfully imported object detection libraries.")
 
-# this is set as a default but feel free to adjust it to your needs
-secret = os.getenv('secret')
-secretDE = os.getenv('secretDE')
-secretNewDE = os.getenv('DE_JWT_SECRET')
-secretNewUK = os.getenv('UK_JWT_SECRET')
-secretNewFR = os.getenv('FR_JWT_SECRET')
-secretAT = os.getenv('AT_JWT_SECRET')
-
-audienceAT = "https://de-ent.pampersrewards.com"
-
-tokenCheck = OAuth2PasswordBearer(tokenUrl="/uploadImage")
-tokenCheckDE = OAuth2PasswordBearer(tokenUrl="/uploadImageDE")
-tokenCheckUK = OAuth2PasswordBearer(tokenUrl="/uploadImageUK")
-tokenCheckFR = OAuth2PasswordBearer(tokenUrl="/uploadImageFR")
-tokenCheckAT = OAuth2PasswordBearer(tokenUrl="/EURBU")
 
 pinMisspelled = ["PIN", "PPIN", "PPN", "PPTN", "PPI", "PI", "PP", "IN", "9IN", "9N", "N", "7IN", "NNN", "I", "PTN",
                  "TN", "PN", "PINN", "PIIN", "INN", "IIN", "PNN", "PITN", "PTIN", "4IN", "RN", "3PIN", "4PIN",
