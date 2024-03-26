@@ -523,49 +523,6 @@ def writeHome(request: Request):
     return templates.TemplateResponse("fileUploadFastApi.html", {"request": request})
 
 
-@app.post('/uploadImageUK')
-# def handleForm(imageFile: UploadFile = File(...), token: str = Security(tokenCheckUK)):
-def handleForm(imageFile: UploadFile = File(...)):
-    # if decodeTokenMultiple(token, secret=secret, secretAnother=secretNewUK):
-    print("----------------------------\nUK")
-    img = imageFile.file.read()
-    imgName = imageFile.filename
-    result = returnResult(imgName, img)
-
-    return {"result": result}
-
-    # else:
-    #     return {"result": "token not authorized"}
-
-
-@app.post('/uploadImageFR')
-# def handleForm(imageFile: UploadFile = File(...), token: str = Security(tokenCheckFR)):
-def handleForm(imageFile: UploadFile = File(...)):
-    # if decodeTokenMultiple(token, secret=secret, secretAnother=secretNewFR):
-    print("----------------------------\nFR")
-    img = imageFile.file.read()
-    imgName = imageFile.filename
-    result = returnResult(imgName, img)
-
-    return {"result": result}
-
-    # else:
-    #     return {"result": "token not authorized"}
-
-
-@app.post('/uploadImageDE')
-# def handleForm(imageFile: UploadFile = File(...), token: str = Security(tokenCheckDE)):
-def handleForm(imageFile: UploadFile = File(...)):
-    # if decodeTokenMultiple(token, secret=secret, secretAnother=secretNewDE):
-    print("----------------------------\nDE")
-    img = imageFile.file.read()
-    imgName = imageFile.filename
-    result = returnResult(imgName, img)
-
-    return {"result": result}
-
-
-
 
 @app.post('/EURBU')
 def handleForm(imageFile: UploadFile = File(...), token: str = Security(tokenCheckAT)):
