@@ -564,53 +564,7 @@ def handleForm(imageFile: UploadFile = File(...)):
 
     return {"result": result}
 
-    # else:
-    #     return {"result": "token not authorized"}
 
-
-@app.post('/uploadImageVerticalUK')
-# def handleForm(imageFile: UploadFile = File(...), token: str = Security(tokenCheckUK)):
-def handleForm(imageFile: UploadFile = File(...)):
-    # if decodeTokenMultiple(token, secret=secret, secretAnother=secretNewUK):
-    print("----------------------------\nUK Vertical")
-    img = imageFile.file.read()
-    imgName = imageFile.filename
-    result = returnResult(imgName, img, True)
-
-    return {"result": result}
-
-    # else:
-    #     return {"result": "token not authorized"}
-
-
-@app.post('/uploadImageVerticalFR')
-# def handleForm(imageFile: UploadFile = File(...), token: str = Security(tokenCheckFR)):
-def handleForm(imageFile: UploadFile = File(...)):
-    # if decodeTokenMultiple(token, secret=secret, secretAnother=secretNewFR):
-    print("----------------------------\nFR Vertical")
-    img = imageFile.file.read()
-    imgName = imageFile.filename
-    result = returnResult(imgName, img, True)
-
-    return {"result": result}
-
-    # else:
-    #     return {"result": "token not authorized"}
-
-
-@app.post('/uploadImageVerticalDE')
-# def handleForm(imageFile: UploadFile = File(...), token: str = Security(tokenCheckDE)):
-def handleForm(imageFile: UploadFile = File(...)):
-    # if decodeTokenMultiple(token, secret=secret, secretAnother=secretNewDE):
-    print("----------------------------\nDE Vertical")
-    img = imageFile.file.read()
-    imgName = imageFile.filename
-    result = returnResult(imgName, img, True)
-
-    return {"result": result}
-
-    # else:
-    #     return {"result": "token not authorized"}
 
 
 @app.post('/EURBU')
