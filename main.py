@@ -504,7 +504,7 @@ def getAudience(program_code):
     audienceEnv = {}
     for line in envLines:
         key, value = map(str.strip, line.split('='))
-        value = value.strip('"')  # Strip double quotes from the value
+        value = value.strip('"') 
         audienceEnv[key] = value
 
     # Get the audience
