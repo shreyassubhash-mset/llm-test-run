@@ -6,6 +6,9 @@ import cv2
 import pickle
 import uvicorn
 import jwt
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from shapely.geometry import Polygon
 from random import shuffle
@@ -44,12 +47,12 @@ templates = Jinja2Templates(directory="templates")
 print("Successfully imported object detection libraries.")
 
 # this is set as a default but feel free to adjust it to your needs
-secret = os.environ['secret']
-secretDE = os.environ['secretDE']
-secretNewDE = os.environ['secretNewDE']
-secretNewUK = os.environ['secretNewUK']
-secretNewFR = os.environ['secretNewFR']
-secretAT = os.environ['secretAT']
+secret = os.getenv('secret')
+secretDE = os.getenv('secretDE')
+secretNewDE = os.getenv('DE_JWT_SECRET')
+secretNewUK = os.getenv('UK_JWT_SECRET')
+secretNewFR = os.getenv('FR_JWT_SECRET')
+secretAT = os.getenv('AT_JWT_SECRET')
 
 audienceAT = "https://de-ent.pampersrewards.com"
 
@@ -126,6 +129,14 @@ def checkIfVertical(img):
     else:
         return False
 
+def checkIfVerticals(img):
+    imgWidth = img.shape[1]
+    imgHeight = img.shape[0]
+
+    if imgWidth < imgHeight:
+        return 'vertical'
+    else:
+        return 'horizontal'
 
 def intersection_bbox(rect1, rect2):
     polygon = Polygon(rect1)
@@ -373,8 +384,8 @@ def initialise_model_config(model_path='./model', weight_filename="model_final.p
 # Restore checkpoint
 print('loading model... ', )
 all_predictor, detect_metadata = initialise_model_config(
-    '/home/azureuser/detectron2/model21Oct10kIter5kDataLr0.0025Batch16Augmented0.23',
-    weight_filename='model_0005999.pth')
+    './model21Oct10kIter5kDataLr0.0025Batch16Augmented0.23',
+    weight_filename='model_final.pth')
 print("\n\n\nmodel and parameters has been loaded into memory")
 
 
@@ -442,6 +453,20 @@ def returnResult(imageArrayPath, imageData, isVertical=False):
 
     return result
 
+def returnResults(imageArrayPath, imageData, isVertical):
+    img = np.fromstring(imageData, np.uint8)
+    img = cv2.imdecode(img, cv2.IMREAD_COLOR)
+
+    checkVertical = checkIfVerticals(img)
+    if checkVertical == 'vertical':
+        out = cv2.transpose(img)
+        img = cv2.flip(out, flipCode=1)
+
+    img_pred = get_orr_img_pred(img, all_predictor)
+    result = postProcessPredsToString(imageArrayPath, img_pred)
+
+    return result
+
 
 def main():
     imgList = glob.glob(imagesTestPath)
@@ -454,7 +479,58 @@ def main():
 
 # depends on use cases
 class Item(BaseModel):
-    language = 'english'
+    language: str = 'english'
+
+def getToken(program_code):
+    # Load token from environment files
+    shellScriptFile = 'secretKeys.sh'
+
+    with open(shellScriptFile, 'r') as tokenFile:
+        # Filter lines starting with 'export'
+        envLines = [line.strip() for line in tokenFile.readlines() if line.strip().startswith('export')]
+
+    # Create a dictionary from environment variable assignments
+    tokenEnv = {}
+    for line in envLines:
+        key, value = map(str.strip, line.split('='))
+        value = value.strip('"')  # Strip double quotes from the value
+        tokenEnv[key] = value
+
+
+    # Get the audience
+    tokenKey = f'export {program_code}_JWT_SECRET'
+
+    # Check if the audience key is in the environment
+    if tokenKey not in tokenEnv:
+        raise KeyError(f"Key '{tokenKey}' not found in the shell script file.")
+
+    # Return the audience value
+    return tokenEnv[tokenKey]
+
+def getAudience(program_code):
+    # Load audience from shell script file
+    shellScriptFile = 'secretKeys.sh'
+
+    with open(shellScriptFile, 'r') as audienceFile:
+        # Filter lines starting with 'export'
+        envLines = [line.strip() for line in audienceFile.readlines() if line.strip().startswith('export')]
+
+    # Create a dictionary from environment variable assignments
+    audienceEnv = {}
+    for line in envLines:
+        key, value = map(str.strip, line.split('='))
+        value = value.strip('"')  # Strip double quotes from the value
+        audienceEnv[key] = value
+
+    # Get the audience
+    audienceKey = f'export {program_code}_AUDIENCE'
+
+    # Check if the audience key is in the environment
+    if audienceKey not in audienceEnv:
+        raise KeyError(f"Key '{audienceKey}' not found in the shell script file.")
+
+    # Return the audience value
+    return audienceEnv[audienceKey]
 
 
 @app.get("/home/", response_class=HTMLResponse)
@@ -576,7 +652,22 @@ def handleForm(imageFile: UploadFile = File(...), token: str = Security(tokenChe
         return {"result": result}
     else:
         return {"result": "token not authorized"}
+    
+@app.post('/uploadImage')
+def handleForm(imageFile: UploadFile = File(...), token: str = Security(tokenCheck), orientation: str = "horizontal", programcode: str = None):
 
+    secret = getToken(programcode)
+    audience = getAudience(programcode)
+
+    print(f"----------------------------\n{programcode} Token: ", token)
+    if decodeTokensWithAudience(token, audience, secret, secretAnother='None'):
+        img = imageFile.file.read()
+        imgName = imageFile.filename
+        result = returnResults(imgName, img, orientation)
+
+        return {"result": result}
+    else:
+        return {"result": "token not authorized"}
 
 # @app.post('/uploadImageNoToken')
 # async def getResults(imageFile: UploadFile = File(...)):
