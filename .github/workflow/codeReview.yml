@@ -5,7 +5,7 @@ on:
 jobs:
   code-review:
     runs-on: ubuntu-latest
-    timeout-minutes: 480
+    timeout-minutes: 120
     permissions:
       pull-requests: write
       issues: write
