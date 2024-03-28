@@ -9,7 +9,7 @@ def pushed_code():
         new_code_formatted = new_code.replace('\r\n', '\n').replace('\r', '\n')
         
         # Send the formatted code for review
-        response = requests.post('http://localhost:8000/review', json={'code': new_code_formatted})
+        response = requests.post('http://20.109.65.194:8000/review', json={'code': new_code_formatted})
         if response.status_code == 200:
             review_result = response.json().get('review', [])
             concatenated_data = ''
