@@ -46,6 +46,21 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 print("Successfully imported object detection libraries.")
 
+# this is set as a default but feel free to adjust it to your needs
+secret = os.getenv('secret')
+secretDE = os.getenv('secretDE')
+secretNewDE = os.getenv('DE_JWT_SECRET')
+secretNewUK = os.getenv('UK_JWT_SECRET')
+secretNewFR = os.getenv('FR_JWT_SECRET')
+secretAT = os.getenv('AT_JWT_SECRET')
+
+audienceAT = "https://de-ent.pampersrewards.com"
+
+tokenCheck = OAuth2PasswordBearer(tokenUrl="/uploadImage")
+tokenCheckDE = OAuth2PasswordBearer(tokenUrl="/uploadImageDE")
+tokenCheckUK = OAuth2PasswordBearer(tokenUrl="/uploadImageUK")
+tokenCheckFR = OAuth2PasswordBearer(tokenUrl="/uploadImageFR")
+tokenCheckAT = OAuth2PasswordBearer(tokenUrl="/EURBU")
 
 pinMisspelled = ["PIN", "PPIN", "PPN", "PPTN", "PPI", "PI", "PP", "IN", "9IN", "9N", "N", "7IN", "NNN", "I", "PTN",
                  "TN", "PN", "PINN", "PIIN", "INN", "IIN", "PNN", "PITN", "PTIN", "4IN", "RN", "3PIN", "4PIN",
@@ -504,7 +519,7 @@ def getAudience(program_code):
     audienceEnv = {}
     for line in envLines:
         key, value = map(str.strip, line.split('='))
-        value = value.strip('"') 
+        value = value.strip('"')  # Strip double quotes from the value
         audienceEnv[key] = value
 
     # Get the audience
@@ -522,6 +537,95 @@ def getAudience(program_code):
 def writeHome(request: Request):
     return templates.TemplateResponse("fileUploadFastApi.html", {"request": request})
 
+
+@app.post('/uploadImageUK')
+# def handleForm(imageFile: UploadFile = File(...), token: str = Security(tokenCheckUK)):
+def handleForm(imageFile: UploadFile = File(...)):
+    # if decodeTokenMultiple(token, secret=secret, secretAnother=secretNewUK):
+    print("----------------------------\nUK")
+    img = imageFile.file.read()
+    imgName = imageFile.filename
+    result = returnResult(imgName, img)
+
+    return {"result": result}
+
+    # else:
+    #     return {"result": "token not authorized"}
+
+
+@app.post('/uploadImageFR')
+# def handleForm(imageFile: UploadFile = File(...), token: str = Security(tokenCheckFR)):
+def handleForm(imageFile: UploadFile = File(...)):
+    # if decodeTokenMultiple(token, secret=secret, secretAnother=secretNewFR):
+    print("----------------------------\nFR")
+    img = imageFile.file.read()
+    imgName = imageFile.filename
+    result = returnResult(imgName, img)
+
+    return {"result": result}
+
+    # else:
+    #     return {"result": "token not authorized"}
+
+
+@app.post('/uploadImageDE')
+# def handleForm(imageFile: UploadFile = File(...), token: str = Security(tokenCheckDE)):
+def handleForm(imageFile: UploadFile = File(...)):
+    # if decodeTokenMultiple(token, secret=secret, secretAnother=secretNewDE):
+    print("----------------------------\nDE")
+    img = imageFile.file.read()
+    imgName = imageFile.filename
+    result = returnResult(imgName, img)
+
+    return {"result": result}
+
+    # else:
+    #     return {"result": "token not authorized"}
+
+
+@app.post('/uploadImageVerticalUK')
+# def handleForm(imageFile: UploadFile = File(...), token: str = Security(tokenCheckUK)):
+def handleForm(imageFile: UploadFile = File(...)):
+    # if decodeTokenMultiple(token, secret=secret, secretAnother=secretNewUK):
+    print("----------------------------\nUK Vertical")
+    img = imageFile.file.read()
+    imgName = imageFile.filename
+    result = returnResult(imgName, img, True)
+
+    return {"result": result}
+
+    # else:
+    #     return {"result": "token not authorized"}
+
+
+@app.post('/uploadImageVerticalFR')
+# def handleForm(imageFile: UploadFile = File(...), token: str = Security(tokenCheckFR)):
+def handleForm(imageFile: UploadFile = File(...)):
+    # if decodeTokenMultiple(token, secret=secret, secretAnother=secretNewFR):
+    print("----------------------------\nFR Vertical")
+    img = imageFile.file.read()
+    imgName = imageFile.filename
+    result = returnResult(imgName, img, True)
+
+    return {"result": result}
+
+    # else:
+    #     return {"result": "token not authorized"}
+
+
+@app.post('/uploadImageVerticalDE')
+# def handleForm(imageFile: UploadFile = File(...), token: str = Security(tokenCheckDE)):
+def handleForm(imageFile: UploadFile = File(...)):
+    # if decodeTokenMultiple(token, secret=secret, secretAnother=secretNewDE):
+    print("----------------------------\nDE Vertical")
+    img = imageFile.file.read()
+    imgName = imageFile.filename
+    result = returnResult(imgName, img, True)
+
+    return {"result": result}
+
+    # else:
+    #     return {"result": "token not authorized"}
 
 
 @app.post('/EURBU')
