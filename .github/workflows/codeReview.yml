@@ -4,7 +4,7 @@ on:
 
 jobs:
   code-review:
-    runs-on: self-hosted
+    runs-on: ubutnu-latest
     timeout-minutes: 480
     permissions:
       pull-requests: write
