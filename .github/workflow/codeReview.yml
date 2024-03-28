@@ -1,0 +1,52 @@
+name: Code Review
+on:
+  pull_request:
+
+jobs:
+  code-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      pull-requests: write
+      issues: write
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set Up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+
+    - name: Cache Repository Code
+      uses: actions/cache@v3
+      with:
+        path: |
+          |-
+            ~/.cache
+        key: ${{ runner.os }}-${{ hashFiles('**/*.yml') }}
+
+    - name: Install Dependencies
+      run: |
+        pip install retrying requests
+
+    - name: Get Branch Diff
+      id: branch-diff
+      run: |
+        BASE_BRANCH="main"
+        HEAD_BRANCH="${{ github.event.pull_request.head.ref }}"
+        echo $HEAD_BRANCH
+
+    - name: Run Your Code Review
+      id: review
+      run: |
+        python ./trial/script.py > reviewoutput.txt
+        
+    - name: Comment PR
+      uses: thollander/actions-comment-pull-request@v2
+      with:
+        filePath: ./reviewoutput.txt 
+        
